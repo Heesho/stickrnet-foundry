@@ -55,6 +55,8 @@ interface IRewarder {
 interface IContent {
     function owner() external view returns (address);
 
+    function balanceOf(address account) external view returns (uint256);
+
     function id_Creator(uint256 tokenId) external view returns (address);
 
     function id_Price(uint256 tokenId) external view returns (uint256);
@@ -63,7 +65,7 @@ interface IContent {
 
     function getNextPrice(uint256 tokenId) external view returns (uint256);
 
-    function coverUri() external view returns (string memory);
+    function uri() external view returns (string memory);
 
     function isModerated() external view returns (bool);
 
@@ -103,6 +105,7 @@ contract Multicall {
         uint256 accountDebt;
         uint256 accountCredit;
         uint256 accountTransferrable;
+        uint256 accountContentOwned;
         uint256 accountContentStaked;
         uint256 accountQuoteEarned;
         uint256 accountTokenEarned;
@@ -130,7 +133,7 @@ contract Multicall {
         address rewarder = IToken(token).rewarder();
 
         uint256 index = ICore(core).token_Index(token);
-        string memory uri = IContent(content).coverUri();
+        string memory uri = IContent(content).uri();
 
         data.index = index;
 
@@ -178,7 +181,7 @@ contract Multicall {
             data.accountDebt = IToken(token).account_DebtRaw(account);
             data.accountCredit = IToken(token).getAccountCredit(account);
             data.accountTransferrable = IToken(token).getAccountTransferrable(account);
-
+            data.accountContentOwned = IContent(content).balanceOf(account);
             data.accountContentStaked = accountContentStaked;
             data.accountQuoteEarned = IRewarder(rewarder).earned(account, quote);
             data.accountTokenEarned = IRewarder(rewarder).earned(account, token);
@@ -215,7 +218,7 @@ contract Multicall {
             : rewardForDuration * IContent(content).id_Price(tokenId) / totalContentStaked;
         data.creator = IContent(content).id_Creator(tokenId);
         data.owner = IContent(content).owner();
-        data.uri = IContent(content).coverUri();
+        data.uri = IContent(content).uri();
         data.isApproved = IContent(content).id_IsApproved(tokenId);
 
         return data;
