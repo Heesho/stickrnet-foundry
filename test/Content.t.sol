@@ -81,7 +81,7 @@ contract ContentTest is Test {
         assertTrue(creator == address(0x789));
     }
 
-    function testRevert_Content_CurateMarketClosed() public {
+    function testRevert_Content_CollectMarketClosed() public {
         core.create("Test1", "TEST1", "ipfs://test1", address(1), false);
         Content content = Content(contentFactory.lastContent());
 
@@ -106,7 +106,7 @@ contract ContentTest is Test {
 
         vm.prank(address(0x456));
         vm.expectRevert("Token__InvalidShift()");
-        content.curate(address(0x456), 1);
+        content.collect(address(0x456), 1);
 
         nextTokenId = content.nextTokenId();
         price = content.id_Price(1);
@@ -122,7 +122,7 @@ contract ContentTest is Test {
         assertTrue(nextPrice == 1e6);
     }
 
-    function test_Content_Curate() public {
+    function test_Content_Collect() public {
         core.create("Test1", "TEST1", "ipfs://test1", address(1), false);
         Content content = Content(contentFactory.lastContent());
         Token token = Token(tokenFactory.lastToken());
@@ -155,7 +155,7 @@ contract ContentTest is Test {
         usdc.approve(address(content), 1e6);
 
         vm.prank(address(0x456));
-        content.curate(address(0x456), 1);
+        content.collect(address(0x456), 1);
 
         nextTokenId = content.nextTokenId();
         price = content.id_Price(1);
@@ -171,7 +171,7 @@ contract ContentTest is Test {
         assertTrue(nextPrice == (price * 11) / 10 + 1e6);
     }
 
-    function test_Content_CurateManyTimes() public {
+    function test_Content_CollectManyTimes() public {
         core.create("Test1", "TEST1", "ipfs://test1", address(1), false);
         Content content = Content(contentFactory.lastContent());
         Token token = Token(tokenFactory.lastToken());
@@ -199,8 +199,8 @@ contract ContentTest is Test {
             address user = address(uint160(i + 1));
             uint256 lastPrice = content.id_Price(1);
             price = content.getNextPrice(1);
-            // console.log("Curate Count: ", i);
-            // console.log("Curate Price: $", price / 1e6);
+            // console.log("Collect Count: ", i);
+            // console.log("Collect Price: $", price / 1e6);
             // console.log("Token Price: $", Token(token).getMarketPrice() / 1e18);
             // console.log();
             assertTrue(price == (lastPrice * 11) / 10 + 1e6);
@@ -211,7 +211,7 @@ contract ContentTest is Test {
             usdc.approve(address(content), price);
 
             vm.prank(user);
-            content.curate(user, 1);
+            content.collect(user, 1);
 
             uint256 nextPrice = content.getNextPrice(1);
             creator = content.id_Creator(1);
@@ -364,7 +364,7 @@ contract ContentTest is Test {
         content.create(owner, "ipfs://content1");
         vm.prank(owner);
         vm.expectRevert("Content__NotApproved()");
-        content.curate(owner, 1);
+        content.collect(owner, 1);
 
         vm.prank(user);
 
