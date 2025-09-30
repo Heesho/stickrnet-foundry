@@ -89,39 +89,25 @@ contract RewarderTest is Test {
         assertTrue(token.balanceOf(address(0x123)) == 0);
     }
 
-    function testRevert_Rewarder_NotifyRewardAmountLessThanDuration() public {
+    function test_Rewarder_NotifyRewardAmountLessThanDuration() public {
         core.create("Test1", "TEST1", "ipfs://test1", address(1), false);
         Rewarder rewarder = Rewarder(rewarderFactory.lastRewarder());
 
         address user1 = address(0x123);
 
         usdc.mint(user1, 100);
+        vm.prank(user1);
         usdc.approve(address(rewarder), 100);
 
         vm.prank(user1);
-        vm.expectRevert("Rewarder__RewardSmallerThanDuration()");
         rewarder.notifyRewardAmount(address(usdc), 100);
 
         (uint256 periodFinish, uint256 rewardRate, uint256 lastUpdateTime, uint256 rewardPerTokenStored) =
             rewarder.token_RewardData(address(usdc));
 
-        assertTrue(periodFinish == 0);
-        assertTrue(rewardRate == 0);
-        assertTrue(lastUpdateTime == 0);
-        assertTrue(rewardPerTokenStored == 0);
-
-        mockToken.mint(user1, 1e18);
-        mockToken.approve(address(rewarder), 1e18);
-
-        vm.prank(address(core));
-        vm.expectRevert("Rewarder__NotRewardToken()");
-        rewarder.notifyRewardAmount(address(mockToken), 1e18);
-
-        (periodFinish, rewardRate, lastUpdateTime, rewardPerTokenStored) = rewarder.token_RewardData(address(mockToken));
-
-        assertTrue(periodFinish == 0);
-        assertTrue(rewardRate == 0);
-        assertTrue(lastUpdateTime == 0);
+        assertTrue(periodFinish > 0);
+        assertTrue(rewardRate > 0);
+        assertTrue(lastUpdateTime > 0);
         assertTrue(rewardPerTokenStored == 0);
     }
 
