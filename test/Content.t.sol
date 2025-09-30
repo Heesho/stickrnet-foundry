@@ -106,7 +106,7 @@ contract ContentTest is Test {
 
         vm.prank(address(0x456));
         vm.expectRevert("Token__InvalidShift()");
-        content.collect(address(0x456), 1);
+        content.collect(address(0x456), 1, nextPrice);
 
         nextTokenId = content.nextTokenId();
         price = content.id_Price(1);
@@ -155,7 +155,7 @@ contract ContentTest is Test {
         usdc.approve(address(content), 1e6);
 
         vm.prank(address(0x456));
-        content.collect(address(0x456), 1);
+        content.collect(address(0x456), 1, nextPrice);
 
         nextTokenId = content.nextTokenId();
         price = content.id_Price(1);
@@ -199,10 +199,6 @@ contract ContentTest is Test {
             address user = address(uint160(i + 1));
             uint256 lastPrice = content.id_Price(1);
             price = content.getNextPrice(1);
-            // console.log("Collect Count: ", i);
-            // console.log("Collect Price: $", price / 1e6);
-            // console.log("Token Price: $", Token(token).getMarketPrice() / 1e18);
-            // console.log();
             assertTrue(price == (lastPrice * 11) / 10 + 1e6);
 
             usdc.mint(user, price);
@@ -211,7 +207,7 @@ contract ContentTest is Test {
             usdc.approve(address(content), price);
 
             vm.prank(user);
-            content.collect(user, 1);
+            content.collect(user, 1, price);
 
             uint256 nextPrice = content.getNextPrice(1);
             creator = content.id_Creator(1);
@@ -221,6 +217,46 @@ contract ContentTest is Test {
             assertTrue(creator == address(0x123));
             assertTrue(owner == user);
         }
+    }
+
+    function test_Content_CollectMaxPriceExceeded() public {
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false);
+        Content content = Content(contentFactory.lastContent());
+        Token token = Token(tokenFactory.lastToken());
+
+        usdc.mint(address(0x789), 1e6);
+
+        vm.prank(address(0x789));
+        usdc.approve(address(token), 1e6);
+
+        vm.prank(address(0x789));
+        token.buy(1e6, 0, 0, address(0x789), address(0));
+
+        content.create(address(0x123), "ipfs://content1");
+        uint256 nextTokenId = content.nextTokenId();
+        uint256 price = content.id_Price(1);
+        address creator = content.id_Creator(1);
+        address owner = content.ownerOf(1);
+
+        assertTrue(nextTokenId == 1);
+        assertTrue(price == 0);
+        assertTrue(creator == address(0x123));
+        assertTrue(owner == address(0x123));
+
+        address user = address(0x456);
+        price = content.getNextPrice(1);
+
+        usdc.mint(user, price);
+
+        vm.prank(user);
+        usdc.approve(address(content), price);
+
+        vm.prank(user);
+        vm.expectRevert("Content__MaxPriceExceeded()");
+        content.collect(user, 1, price - 1);
+
+        vm.prank(user);
+        content.collect(user, 1, price + 1);
     }
 
     function test_Content_Distribute(uint256 amount) public {
@@ -364,7 +400,7 @@ contract ContentTest is Test {
         content.create(owner, "ipfs://content1");
         vm.prank(owner);
         vm.expectRevert("Content__NotApproved()");
-        content.collect(owner, 1);
+        content.collect(owner, 1, 1e6);
 
         vm.prank(user);
 

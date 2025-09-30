@@ -50,6 +50,7 @@ contract Content is ERC721, ERC721Enumerable, ERC721URIStorage, ReentrancyGuard,
     error Content__ZeroTo();
     error Content__NotCreator();
     error Content__InvalidTokenId();
+    error Content__MaxPriceExceeded();
     error Content__TransferDisabled();
     error Content__NotApproved();
     error Content__AlreadyApproved();
@@ -94,15 +95,17 @@ contract Content is ERC721, ERC721Enumerable, ERC721URIStorage, ReentrancyGuard,
         emit Content__Created(msg.sender, to, tokenId, tokenUri);
     }
 
-    function collect(address to, uint256 tokenId) external nonReentrant {
+    function collect(address to, uint256 tokenId, uint256 maxPrice) external nonReentrant {
         if (to == address(0)) revert Content__ZeroTo();
         if (ownerOf(tokenId) == address(0)) revert Content__InvalidTokenId();
         if (!id_IsApproved[tokenId]) revert Content__NotApproved();
 
-        address creator = id_Creator[tokenId];
-        uint256 prevPrice = id_Price[tokenId];
-        address prevOwner = ownerOf(tokenId);
         uint256 nextPrice = getNextPrice(tokenId);
+        if (nextPrice > maxPrice) revert Content__MaxPriceExceeded();
+
+        address creator = id_Creator[tokenId];
+        address prevOwner = ownerOf(tokenId);
+        uint256 prevPrice = id_Price[tokenId];
         uint256 surplus = nextPrice - prevPrice;
 
         id_Price[tokenId] = nextPrice;

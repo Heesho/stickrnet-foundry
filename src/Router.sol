@@ -42,7 +42,7 @@ interface IContent {
 
     function create(address to, string memory uri) external returns (uint256);
 
-    function collect(address to, uint256 tokenId) external;
+    function collect(address to, uint256 tokenId, uint256 maxPrice) external;
 
     function distribute() external;
 }
@@ -174,7 +174,7 @@ contract Router is ReentrancyGuard, Ownable {
         emit Router__ContentCreated(token, content, msg.sender, tokenId);
     }
 
-    function collectContent(address token, uint256 tokenId) external nonReentrant {
+    function collectContent(address token, uint256 tokenId, uint256 maxPrice) external nonReentrant {
         address content = IToken(token).content();
         address quote = ICore(core).quote();
         uint256 price = IContent(content).getNextPrice(tokenId);
@@ -182,7 +182,7 @@ contract Router is ReentrancyGuard, Ownable {
         IERC20(quote).safeTransferFrom(msg.sender, address(this), price);
         _safeApprove(quote, content, price);
 
-        IContent(content).collect(msg.sender, tokenId);
+        IContent(content).collect(msg.sender, tokenId, maxPrice);
 
         emit Router__ContentCollected(token, content, msg.sender, price, tokenId);
     }

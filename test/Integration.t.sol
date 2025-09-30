@@ -436,7 +436,7 @@ contract IntegrationTest is Test {
         vm.prank(user2);
         usdc.approve(address(router), contentPrice);
         vm.prank(user2);
-        router.collectContent(address(wft1), 1);
+        router.collectContent(address(wft1), 1, contentPrice);
         tokenData = multicall.getTokenData(address(wft1), user2);
         vm.warp(block.timestamp + 1 days);
 
@@ -447,7 +447,7 @@ contract IntegrationTest is Test {
         vm.prank(user3);
         usdc.approve(address(router), contentPrice);
         vm.prank(user3);
-        router.collectContent(address(wft1), 1);
+        router.collectContent(address(wft1), 1, contentPrice);
         tokenData = multicall.getTokenData(address(wft1), user3);
         vm.warp(block.timestamp + 1 days);
 
@@ -458,7 +458,7 @@ contract IntegrationTest is Test {
         vm.prank(user1);
         usdc.approve(address(router), contentPrice);
         vm.prank(user1);
-        router.collectContent(address(wft1), 1);
+        router.collectContent(address(wft1), 1, contentPrice);
         tokenData = multicall.getTokenData(address(wft1), user1);
         vm.warp(block.timestamp + 1 days);
 
