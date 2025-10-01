@@ -4,54 +4,10 @@ pragma solidity 0.8.19;
 import {IERC20, SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
-
-interface ICore {
-    function quote() external view returns (address);
-
-    function create(string calldata name, string calldata symbol, string calldata uri, address owner, bool isModerated)
-        external
-        returns (address token);
-}
-
-interface IToken {
-    function content() external view returns (address);
-
-    function sale() external view returns (address);
-
-    function rewarder() external view returns (address);
-
-    function buy(
-        uint256 amountQuoteIn,
-        uint256 minAmountTokenOut,
-        uint256 expireTimestamp,
-        address to,
-        address provider
-    ) external returns (uint256 amountTokenOut);
-
-    function sell(
-        uint256 amountTokenIn,
-        uint256 minAmountQuoteOut,
-        uint256 expireTimestamp,
-        address to,
-        address provider
-    ) external returns (uint256 amountQuoteOut);
-}
-
-interface IContent {
-    function getNextPrice(uint256 tokenId) external view returns (uint256);
-
-    function create(address to, string memory uri) external returns (uint256);
-
-    function collect(address to, uint256 tokenId, uint256 maxPrice) external;
-
-    function distribute() external;
-}
-
-interface IRewarder {
-    function getReward(address account) external;
-
-    function notifyRewardAmount(address token, uint256 amount) external;
-}
+import {ICore} from "./interfaces/ICore.sol";
+import {IToken} from "./interfaces/IToken.sol";
+import {IContent} from "./interfaces/IContent.sol";
+import {IRewarder} from "./interfaces/IRewarder.sol";
 
 contract Router is ReentrancyGuard, Ownable {
     using SafeERC20 for IERC20;

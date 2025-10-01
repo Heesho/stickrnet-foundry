@@ -40,7 +40,7 @@ contract RewarderTest is Test {
         assertTrue(rewarder.content() == address(content));
         assertTrue(rewarder.getRewardTokens().length == 2);
         assertTrue(rewarder.totalSupply() == 0);
-        assertTrue(rewarder.duration() == 7 days);
+        assertTrue(rewarder.DURATION() == 7 days);
         assertTrue(rewarder.getRewardTokens()[0] == address(usdc));
         assertTrue(rewarder.getRewardTokens()[1] == address(token));
         assertTrue(rewarder.token_IsReward(address(usdc)) == true);

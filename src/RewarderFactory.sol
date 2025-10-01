@@ -8,7 +8,7 @@ import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 contract Rewarder is ReentrancyGuard {
     using SafeERC20 for IERC20;
 
-    uint256 private constant DURATION = 7 days;
+    uint256 public constant DURATION = 7 days;
     uint256 public constant PRECISION = 1e18;
 
     address public immutable content;
@@ -123,10 +123,6 @@ contract Rewarder is ReentrancyGuard {
         token_IsReward[token] = true;
         rewardTokens.push(token);
         emit Rewarder__RewardAdded(token);
-    }
-
-    function duration() external pure returns (uint256) {
-        return DURATION;
     }
 
     function left(address token) public view returns (uint256 leftover) {

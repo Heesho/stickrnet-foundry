@@ -302,7 +302,7 @@ contract ContentTest is Test {
         usdcBalanceContent = usdc.balanceOf(address(content));
         usdcBalanceRewarder = usdc.balanceOf(address(rewarder));
 
-        uint256 duration = rewarder.duration();
+        uint256 duration = rewarder.DURATION();
 
         if (tokenToDistro > duration) {
             assertTrue(tokenBalanceContent == 0);
