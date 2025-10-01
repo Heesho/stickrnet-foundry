@@ -248,32 +248,6 @@ contract Multicall {
         );
     }
 
-    function buyTokenOut(address token, uint256 tokenAmtOut, uint256 slippageTolerance)
-        external
-        view
-        returns (uint256 quoteRawIn, uint256 slippage, uint256 minTokenAmtOut, uint256 autoMinTokenAmtOut)
-    {
-        uint256 xv = IToken(token).reserveVirtQuoteWad();
-        uint256 xr = IToken(token).reserveRealQuoteWad();
-        uint256 x0 = xv + xr;
-        uint256 y0 = IToken(token).reserveTokenAmt();
-
-        if (tokenAmtOut > y0) return (0, 0, 0, 0);
-
-        uint256 quoteWadIn = DIVISOR.mulDivDown(x0.mulDivDown(y0, y0 - tokenAmtOut) - x0, DIVISOR - FEE);
-
-        if (quoteWadIn < MIN_TRADE_AMOUNT) return (0, 0, 0, 0);
-
-        quoteRawIn = IToken(token).wadToRaw(quoteWadIn);
-
-        if (quoteRawIn == 0) return (0, 0, 0, 0);
-
-        slippage = 100 * (PRECISION - (tokenAmtOut.mulDivDown(IToken(token).getMarketPrice(), quoteWadIn)));
-        minTokenAmtOut = tokenAmtOut.mulDivDown(slippageTolerance, DIVISOR);
-        autoMinTokenAmtOut =
-            tokenAmtOut.mulDivDown((DIVISOR * PRECISION) - ((slippage + PRECISION / 10) * 100), DIVISOR * PRECISION);
-    }
-
     function sellTokenIn(address token, uint256 tokenAmtIn, uint256 slippageTolerance)
         external
         view
@@ -312,35 +286,5 @@ contract Multicall {
             (DIVISOR * PRECISION) - ((slippage + PRECISION / 10) * 100), DIVISOR * PRECISION
         );
         autoMinQuoteRawOut = IToken(token).wadToRaw(autoMinQuoteWadOut);
-    }
-
-    function sellQuoteOut(address token, uint256 quoteRawOut, uint256 slippageTolerance)
-        external
-        view
-        returns (uint256 tokenAmtIn, uint256 slippage, uint256 minQuoteRawOut, uint256 autoMinQuoteRawOut)
-    {
-        uint256 xv = IToken(token).reserveVirtQuoteWad();
-        uint256 xr = IToken(token).reserveRealQuoteWad();
-        uint256 x0 = xv + xr;
-        uint256 y0 = IToken(token).reserveTokenAmt();
-
-        uint256 quoteWadOut = IToken(token).rawToWad(quoteRawOut);
-
-        if (quoteWadOut > xr) return (0, 0, 0, 0);
-
-        tokenAmtIn = DIVISOR.mulDivDown((x0.mulDivUp(y0, x0 - quoteWadOut)) - y0, DIVISOR - FEE);
-
-        if (tokenAmtIn < MIN_TRADE_AMOUNT) return (0, 0, 0, 0);
-
-        slippage = 100
-            * (
-                PRECISION
-                    - (quoteWadOut.mulDivDown(PRECISION, (tokenAmtIn.mulDivDown(IToken(token).getMarketPrice(), PRECISION))))
-            );
-        uint256 minQuoteWadIn = quoteWadOut.mulDivDown(slippageTolerance, DIVISOR);
-        minQuoteRawOut = IToken(token).wadToRaw(minQuoteWadIn);
-        uint256 autoMinQuoteWadIn =
-            quoteWadOut.mulDivDown((DIVISOR * PRECISION) - ((slippage + PRECISION / 10) * 100), DIVISOR * PRECISION);
-        autoMinQuoteRawOut = IToken(token).wadToRaw(autoMinQuoteWadIn);
     }
 }
