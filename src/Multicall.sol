@@ -160,10 +160,8 @@ contract Multicall {
         uint256 totalContentStaked = IToken(token).rawToWad(IRewarder(rewarder).totalSupply());
         uint256 accountContentStaked = IToken(token).rawToWad(IRewarder(rewarder).account_Balance(account));
 
-        uint256 contentQuoteRewardForDuration =
-            totalContentStaked == 0 ? 0 : IToken(token).rawToWad(IRewarder(rewarder).getRewardForDuration(quote));
-        uint256 contentTokenRewardForDuration =
-            totalContentStaked == 0 ? 0 : IRewarder(rewarder).getRewardForDuration(token);
+        uint256 contentQuoteRewardForDuration = IToken(token).rawToWad(IRewarder(rewarder).getRewardForDuration(quote));
+        uint256 contentTokenRewardForDuration = IRewarder(rewarder).getRewardForDuration(token);
         uint256 contentApr = totalContentStaked == 0
             ? 0
             : (
@@ -199,16 +197,12 @@ contract Multicall {
 
         uint256 totalContentStaked = IRewarder(rewarder).totalSupply();
 
-        uint256 contentQuoteRewardForDuration =
-            totalContentStaked == 0 ? 0 : IToken(token).rawToWad(IRewarder(rewarder).getRewardForDuration(quote));
-        uint256 contentTokenRewardForDuration =
-            totalContentStaked == 0 ? 0 : IRewarder(rewarder).getRewardForDuration(token);
-        uint256 rewardForDuration = totalContentStaked == 0
-            ? 0
-            : (
-                contentQuoteRewardForDuration
-                    + ((contentTokenRewardForDuration * IToken(token).getMarketPrice()) / PRECISION)
-            );
+        uint256 contentQuoteRewardForDuration = IToken(token).rawToWad(IRewarder(rewarder).getRewardForDuration(quote));
+        uint256 contentTokenRewardForDuration = IRewarder(rewarder).getRewardForDuration(token);
+        uint256 rewardForDuration = (
+            contentQuoteRewardForDuration
+                + ((contentTokenRewardForDuration * IToken(token).getMarketPrice()) / PRECISION)
+        );
 
         data.tokenId = tokenId;
         data.price = IContent(content).id_Price(tokenId);
