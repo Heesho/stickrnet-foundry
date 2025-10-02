@@ -166,8 +166,9 @@ contract Multicall {
         uint256 xv = IToken(token).reserveVirtQuoteWad();
 
         uint256 quoteWadIn = IToken(token).rawToWad(quoteRawIn);
-        uint256 feeWad = (quoteWadIn * fee) / divisor;
-        uint256 netWad = quoteWadIn - feeWad;
+        uint256 feeRaw = (quoteRawIn * fee) / divisor;
+        uint256 netRaw = quoteRawIn - feeRaw;
+        uint256 netWad = IToken(token).rawToWad(netRaw);
 
         uint256 x0 = xv + xr;
         uint256 x1 = x0 + netWad;
