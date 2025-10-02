@@ -16,6 +16,7 @@ contract Content is ERC721, ERC721Enumerable, ERC721URIStorage, ReentrancyGuard,
     address public immutable rewarder;
     address public immutable token;
     address public immutable quote;
+    uint256 public immutable initialPrice;
 
     string public uri;
 
@@ -52,11 +53,13 @@ contract Content is ERC721, ERC721Enumerable, ERC721URIStorage, ReentrancyGuard,
         address _token,
         address _quote,
         address rewarderFactory,
+        uint256 _initialPrice,
         bool _isModerated
     ) ERC721(name, symbol) {
         uri = _uri;
         token = _token;
         quote = _quote;
+        initialPrice = _initialPrice;
         isModerated = _isModerated;
         rewarder = IRewarderFactory(rewarderFactory).create(address(this));
         IRewarder(rewarder).addReward(quote);
@@ -207,7 +210,7 @@ contract Content is ERC721, ERC721Enumerable, ERC721URIStorage, ReentrancyGuard,
     }
 
     function getNextPrice(uint256 tokenId) public view returns (uint256) {
-        return (id_Price[tokenId] * 11) / 10 + 1e6;
+        return (id_Price[tokenId] * 11) / 10 + initialPrice;
     }
 }
 
@@ -224,9 +227,10 @@ contract ContentFactory {
         address quote,
         address rewarderFactory,
         address owner,
+        uint256 initialPrice,
         bool isModerated
     ) external returns (address, address) {
-        Content content = new Content(name, symbol, uri, token, quote, rewarderFactory, isModerated);
+        Content content = new Content(name, symbol, uri, token, quote, rewarderFactory, initialPrice, isModerated);
         lastContent = address(content);
         content.transferOwnership(owner);
         emit ContentFactory__Created(lastContent);

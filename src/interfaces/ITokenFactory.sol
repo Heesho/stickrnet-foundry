@@ -15,6 +15,7 @@ interface ITokenFactory {
         address contentFactory,
         address rewarderFactory,
         address owner,
+        uint256 initialContentPrice,
         bool isModerated
     ) external returns (address token);
 }

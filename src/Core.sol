@@ -8,6 +8,7 @@ import {IToken} from "./interfaces/IToken.sol";
 contract Core is Ownable {
     uint256 public constant INITIAL_SUPPLY = 1_000_000_000 * 1e18;
     uint256 public constant RESERVE_VIRT_QUOTE_RAW = 100_000 * 1e6;
+    uint256 public constant INITIAL_CONTENT_PRICE = 1e6;
 
     address public immutable quote;
 
@@ -61,6 +62,7 @@ contract Core is Ownable {
             contentFactory,
             rewarderFactory,
             owner,
+            INITIAL_CONTENT_PRICE,
             isModerated
         );
 
