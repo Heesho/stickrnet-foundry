@@ -31,6 +31,7 @@ contract Content is ERC721, ERC721Enumerable, ERC721URIStorage, ReentrancyGuard,
 
     error Content__ZeroTo();
     error Content__NotCreator();
+    error Content__ZeroInitialPrice();
     error Content__InvalidTokenId();
     error Content__MaxPriceExceeded();
     error Content__TransferDisabled();
@@ -56,6 +57,7 @@ contract Content is ERC721, ERC721Enumerable, ERC721URIStorage, ReentrancyGuard,
         uint256 _initialPrice,
         bool _isModerated
     ) ERC721(name, symbol) {
+        if (_initialPrice == 0) revert Content__ZeroInitialPrice();
         uri = _uri;
         token = _token;
         quote = _quote;

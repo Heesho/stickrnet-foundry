@@ -38,6 +38,7 @@ contract Token is ERC20, ERC20Permit, ERC20Votes, ReentrancyGuard {
 
     error Token__QuoteDecimals();
     error Token__ZeroInput();
+    error Token__ZeroTo();
     error Token__Expired();
     error Token__MinTradeSize();
     error Token__Slippage();
@@ -66,8 +67,13 @@ contract Token is ERC20, ERC20Permit, ERC20Votes, ReentrancyGuard {
     event Token__Borrow(address indexed who, address indexed to, uint256 quoteRaw);
     event Token__Repay(address indexed who, address indexed to, uint256 quoteRaw);
 
-    modifier notZero(uint256 amount) {
+    modifier notZeroInput(uint256 amount) {
         if (amount == 0) revert Token__ZeroInput();
+        _;
+    }
+
+    modifier notZeroTo(address account) {
+        if (account == address(0)) revert Token__ZeroTo();
         _;
     }
 
@@ -117,6 +123,7 @@ contract Token is ERC20, ERC20Permit, ERC20Votes, ReentrancyGuard {
     function buy(uint256 quoteRawIn, uint256 minTokenAmtOut, uint256 deadline, address to, address provider)
         external
         nonReentrant
+        notZeroTo(to)
         minTradeSize(quoteRawIn)
         notExpired(deadline)
         returns (uint256 tokenAmtOut)
@@ -136,6 +143,7 @@ contract Token is ERC20, ERC20Permit, ERC20Votes, ReentrancyGuard {
     function sell(uint256 tokenAmtIn, uint256 minQuoteRawOut, uint256 deadline, address to, address provider)
         external
         nonReentrant
+        notZeroTo(to)
         minTradeSize(tokenAmtIn)
         notExpired(deadline)
         returns (uint256 quoteRawOut)
@@ -152,7 +160,7 @@ contract Token is ERC20, ERC20Permit, ERC20Votes, ReentrancyGuard {
         IERC20(quote).safeTransfer(to, quoteRawOut);
     }
 
-    function borrow(address to, uint256 quoteRaw) external nonReentrant notZero(quoteRaw) {
+    function borrow(address to, uint256 quoteRaw) external nonReentrant notZeroTo(to) notZeroInput(quoteRaw) {
         uint256 credit = getAccountCredit(msg.sender);
         if (quoteRaw > credit) revert Token__CreditExceeded();
 
@@ -163,7 +171,7 @@ contract Token is ERC20, ERC20Permit, ERC20Votes, ReentrancyGuard {
         IERC20(quote).safeTransfer(to, quoteRaw);
     }
 
-    function repay(address to, uint256 quoteRaw) external nonReentrant notZero(quoteRaw) {
+    function repay(address to, uint256 quoteRaw) external nonReentrant notZeroTo(to) notZeroInput(quoteRaw) {
         totalDebtRaw -= quoteRaw;
         account_DebtRaw[to] -= quoteRaw;
 
@@ -171,13 +179,13 @@ contract Token is ERC20, ERC20Permit, ERC20Votes, ReentrancyGuard {
         IERC20(quote).safeTransferFrom(msg.sender, address(this), quoteRaw);
     }
 
-    function heal(uint256 quoteRaw) external nonReentrant notZero(quoteRaw) {
+    function heal(uint256 quoteRaw) external nonReentrant notZeroInput(quoteRaw) {
         IERC20(quote).safeTransferFrom(msg.sender, address(this), quoteRaw);
         _healQuoteReserves(quoteRaw);
         emit Token__Heal(msg.sender, quoteRaw);
     }
 
-    function burn(uint256 tokenAmt) external nonReentrant notZero(tokenAmt) {
+    function burn(uint256 tokenAmt) external nonReentrant notZeroInput(tokenAmt) {
         _burn(msg.sender, tokenAmt);
         _burnTokenReserves(tokenAmt);
         emit Token__Burn(msg.sender, tokenAmt);
