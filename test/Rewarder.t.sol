@@ -32,7 +32,16 @@ contract RewarderTest is Test {
     }
 
     function test_Rewarder_Constructor() public {
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false);
+
+        uint256 amountQuoteIn = 1e6;
+        usdc.mint(address(1), amountQuoteIn);
+
+        vm.prank(address(1));
+        usdc.approve(address(core), amountQuoteIn);
+
+        vm.prank(address(1));
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn);
+        
         Content content = Content(contentFactory.lastContent());
         Token token = Token(tokenFactory.lastToken());
         Rewarder rewarder = Rewarder(rewarderFactory.lastRewarder());
@@ -48,7 +57,15 @@ contract RewarderTest is Test {
     }
 
     function testRevert_Rewarder_AddRewardToken() public {
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false);
+        uint256 amountQuoteIn = 1e6;
+        usdc.mint(address(1), amountQuoteIn);
+
+        vm.prank(address(1));
+        usdc.approve(address(core), amountQuoteIn);
+
+        vm.prank(address(1));
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn);
+
         Rewarder rewarder = Rewarder(rewarderFactory.lastRewarder());
         Content content = Content(contentFactory.lastContent());
 
@@ -66,7 +83,15 @@ contract RewarderTest is Test {
     }
 
     function test_Rewarder_AddRewardToken() public {
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false);
+        uint256 amountQuoteIn = 1e6;
+        usdc.mint(address(1), amountQuoteIn);
+
+        vm.prank(address(1));
+        usdc.approve(address(core), amountQuoteIn);
+
+        vm.prank(address(1));
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn);
+        
         Rewarder rewarder = Rewarder(rewarderFactory.lastRewarder());
         Content content = Content(contentFactory.lastContent());
 
@@ -79,7 +104,15 @@ contract RewarderTest is Test {
     }
 
     function test_Rewarder_GetRewardNoBalance() public {
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false);
+        uint256 amountQuoteIn = 1e6;
+        usdc.mint(address(1), amountQuoteIn);
+
+        vm.prank(address(1));
+        usdc.approve(address(core), amountQuoteIn);
+
+        vm.prank(address(1));
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn);
+
         Token token = Token(tokenFactory.lastToken());
         Rewarder rewarder = Rewarder(rewarderFactory.lastRewarder());
 
@@ -90,7 +123,15 @@ contract RewarderTest is Test {
     }
 
     function test_Rewarder_NotifyRewardAmountLessThanDuration() public {
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false);
+        uint256 amountQuoteIn = 1e6;
+        usdc.mint(address(1), amountQuoteIn);
+
+        vm.prank(address(1));
+        usdc.approve(address(core), amountQuoteIn);
+
+        vm.prank(address(1));
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn);
+
         Rewarder rewarder = Rewarder(rewarderFactory.lastRewarder());
 
         address user1 = address(0x123);
@@ -112,7 +153,15 @@ contract RewarderTest is Test {
     }
 
     function testRevert_Rewarder_NotifyRewardAmountNotRewardToken() public {
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false);
+        uint256 amountQuoteIn = 1e6;
+        usdc.mint(address(1), amountQuoteIn);
+
+        vm.prank(address(1));
+        usdc.approve(address(core), amountQuoteIn);
+
+        vm.prank(address(1));
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn);
+        
         Rewarder rewarder = Rewarder(rewarderFactory.lastRewarder());
 
         address user1 = address(0x123);
@@ -134,7 +183,15 @@ contract RewarderTest is Test {
     }
 
     function testRevert_Rewarder_NotifyRewardAmountLessThanLeft() public {
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false);
+        uint256 amountQuoteIn = 1e6;
+        usdc.mint(address(1), amountQuoteIn);
+
+        vm.prank(address(1));
+        usdc.approve(address(core), amountQuoteIn);
+
+        vm.prank(address(1));
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn);
+
         Rewarder rewarder = Rewarder(rewarderFactory.lastRewarder());
 
         address user1 = address(0x123);
@@ -162,7 +219,15 @@ contract RewarderTest is Test {
     }
 
     function test_Rewarder_NotifyRewardAmountZeroTotalSupply() public {
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false);
+        uint256 amountQuoteIn = 1e6;
+        usdc.mint(address(1), amountQuoteIn);
+
+        vm.prank(address(1));
+        usdc.approve(address(core), amountQuoteIn);
+
+        vm.prank(address(1));
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn);
+
         Rewarder rewarder = Rewarder(rewarderFactory.lastRewarder());
 
         address user1 = address(0x123);
@@ -187,7 +252,15 @@ contract RewarderTest is Test {
     function testFuzz_Rewarder_NotifyRewardAmount(uint256 amount) public {
         vm.assume(amount > 604800 && amount < 1_000_000_000_000_000_000);
 
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false);
+        uint256 amountQuoteIn = 1e6;
+        usdc.mint(address(1), amountQuoteIn);
+
+        vm.prank(address(1));
+        usdc.approve(address(core), amountQuoteIn);
+
+        vm.prank(address(1));
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn);
+
         Content content = Content(contentFactory.lastContent());
         Rewarder rewarder = Rewarder(rewarderFactory.lastRewarder());
 
@@ -232,7 +305,15 @@ contract RewarderTest is Test {
     }
 
     function testRevert_Rewarder_Deposit() public {
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false);
+        uint256 amountQuoteIn = 1e6;
+        usdc.mint(address(1), amountQuoteIn);
+
+        vm.prank(address(1));
+        usdc.approve(address(core), amountQuoteIn);
+
+        vm.prank(address(1));
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn);
+
         Content content = Content(contentFactory.lastContent());
         Rewarder rewarder = Rewarder(rewarderFactory.lastRewarder());
 
@@ -257,7 +338,15 @@ contract RewarderTest is Test {
     function testFuzz_Rewarder_Deposit(uint256 amount) public {
         vm.assume(amount > 0 && amount < 1_000_000_000_000_000_000);
 
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false);
+        uint256 amountQuoteIn = 1e6;
+        usdc.mint(address(1), amountQuoteIn);
+
+        vm.prank(address(1));
+        usdc.approve(address(core), amountQuoteIn);
+
+        vm.prank(address(1));
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn);
+
         Content content = Content(contentFactory.lastContent());
         Rewarder rewarder = Rewarder(rewarderFactory.lastRewarder());
 
@@ -274,7 +363,15 @@ contract RewarderTest is Test {
     function testFuzz_Rewarder_Withdraw(uint256 amount) public {
         vm.assume(amount > 0 && amount < 1_000_000_000_000_000_000);
 
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false);
+        uint256 amountQuoteIn = 1e6;
+        usdc.mint(address(1), amountQuoteIn);
+
+        vm.prank(address(1));
+        usdc.approve(address(core), amountQuoteIn);
+
+        vm.prank(address(1));
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn);
+
         Content content = Content(contentFactory.lastContent());
         Rewarder rewarder = Rewarder(rewarderFactory.lastRewarder());
 
@@ -297,7 +394,15 @@ contract RewarderTest is Test {
     function testFuzz_Rewarder_GetReward(uint256 amount) public {
         vm.assume(amount > 604800 && amount < 1_000_000_000_000_000_000);
 
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false);
+        uint256 amountQuoteIn = 1e6;
+        usdc.mint(address(1), amountQuoteIn);
+
+        vm.prank(address(1));
+        usdc.approve(address(core), amountQuoteIn);
+
+        vm.prank(address(1));
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn);
+
         Content content = Content(contentFactory.lastContent());
         Rewarder rewarder = Rewarder(rewarderFactory.lastRewarder());
 
@@ -350,7 +455,15 @@ contract RewarderTest is Test {
     }
 
     function test_Rewarder_Coverage() public {
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false);
+        uint256 amountQuoteIn = 1e6;
+        usdc.mint(address(1), amountQuoteIn);
+
+        vm.prank(address(1));
+        usdc.approve(address(core), amountQuoteIn);
+
+        vm.prank(address(1));
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn);
+
         Content content = Content(contentFactory.lastContent());
         Rewarder rewarder = Rewarder(rewarderFactory.lastRewarder());
 

@@ -23,8 +23,7 @@ contract Router is ReentrancyGuard, Ownable {
         address indexed token,
         address indexed creator,
         bool isModerated,
-        uint256 amountQuoteIn,
-        uint256 amountTokenOut
+        uint256 amountQuoteIn
     );
     event Router__Buy(
         address indexed token,
@@ -59,22 +58,12 @@ contract Router is ReentrancyGuard, Ownable {
         bool isModerated,
         uint256 amountQuoteIn
     ) external nonReentrant returns (address token) {
-        token = ICore(core).create(name, symbol, uri, msg.sender, isModerated);
+        address quote = ICore(core).quote();
+        IERC20(quote).safeTransferFrom(msg.sender, address(this), amountQuoteIn);
+        _safeApprove(quote, core, amountQuoteIn);
+        token = ICore(core).create(name, symbol, uri, msg.sender, isModerated, amountQuoteIn);
 
-        uint256 amountTokenOut;
-        if (amountQuoteIn > 0) {
-            address quote = ICore(core).quote();
-            IERC20(quote).safeTransferFrom(msg.sender, address(this), amountQuoteIn);
-            _safeApprove(quote, token, amountQuoteIn);
-            amountTokenOut = IToken(token).buy(amountQuoteIn, 0, 0, msg.sender, address(0));
-
-            uint256 remainingQuote = IERC20(quote).balanceOf(address(this));
-            if (remainingQuote > 0) {
-                IERC20(quote).safeTransfer(msg.sender, remainingQuote);
-            }
-        }
-
-        emit Router__TokenCreated(name, symbol, uri, token, msg.sender, isModerated, amountQuoteIn, amountTokenOut);
+        emit Router__TokenCreated(name, symbol, uri, token, msg.sender, isModerated, amountQuoteIn);
     }
 
     function buy(

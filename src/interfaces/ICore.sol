@@ -13,7 +13,12 @@ interface ICore {
     function index_Token(uint256 index) external view returns (address);
     function token_Index(address token) external view returns (uint256);
 
-    function create(string memory name, string memory symbol, string memory uri, address owner, bool isModerated)
-        external
-        returns (address token);
+    function create(
+        string memory name,
+        string memory symbol,
+        string memory uri,
+        address owner,
+        bool isModerated,
+        uint256 quoteRawIn
+    ) external returns (address token);
 }
