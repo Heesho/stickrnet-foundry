@@ -30,7 +30,7 @@ contract Content is ERC721, ERC721Enumerable, ERC721URIStorage, ReentrancyGuard,
     mapping(uint256 => bool) public id_IsApproved;
 
     error Content__ZeroTo();
-    error Content__NotCreator();
+    error Content__ZeroLengthUri();
     error Content__ZeroInitialPrice();
     error Content__InvalidTokenId();
     error Content__MaxPriceExceeded();
@@ -58,6 +58,7 @@ contract Content is ERC721, ERC721Enumerable, ERC721URIStorage, ReentrancyGuard,
         bool _isModerated
     ) ERC721(name, symbol) {
         if (_initialPrice == 0) revert Content__ZeroInitialPrice();
+        if (bytes(_uri).length == 0) revert Content__ZeroLengthUri();
         uri = _uri;
         token = _token;
         quote = _quote;
@@ -70,6 +71,7 @@ contract Content is ERC721, ERC721Enumerable, ERC721URIStorage, ReentrancyGuard,
 
     function create(address to, string memory tokenUri) external nonReentrant returns (uint256 tokenId) {
         if (to == address(0)) revert Content__ZeroTo();
+        if (bytes(tokenUri).length == 0) revert Content__ZeroLengthUri();
 
         tokenId = ++nextTokenId;
         id_Creator[tokenId] = to;
