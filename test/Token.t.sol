@@ -408,7 +408,7 @@ contract TokenTest is Test {
 
         vm.prank(address(1));
         core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn);
-        
+
         Token token = Token(tokenFactory.lastToken());
 
         address user1 = address(0x123);

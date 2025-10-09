@@ -30,7 +30,6 @@ contract ContentTest is Test {
     }
 
     function test_Content_Constructor() public {
-
         uint256 amountQuoteIn = 1e6;
         usdc.mint(address(1), amountQuoteIn);
 
@@ -389,7 +388,7 @@ contract ContentTest is Test {
 
         vm.prank(address(1));
         core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn);
-        
+
         Content content = Content(contentFactory.lastContent());
 
         assertTrue(content.supportsInterface(0x80ac58cd));

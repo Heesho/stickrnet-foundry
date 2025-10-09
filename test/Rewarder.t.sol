@@ -32,7 +32,6 @@ contract RewarderTest is Test {
     }
 
     function test_Rewarder_Constructor() public {
-
         uint256 amountQuoteIn = 1e6;
         usdc.mint(address(1), amountQuoteIn);
 
@@ -41,7 +40,7 @@ contract RewarderTest is Test {
 
         vm.prank(address(1));
         core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn);
-        
+
         Content content = Content(contentFactory.lastContent());
         Token token = Token(tokenFactory.lastToken());
         Rewarder rewarder = Rewarder(rewarderFactory.lastRewarder());
@@ -91,7 +90,7 @@ contract RewarderTest is Test {
 
         vm.prank(address(1));
         core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn);
-        
+
         Rewarder rewarder = Rewarder(rewarderFactory.lastRewarder());
         Content content = Content(contentFactory.lastContent());
 
@@ -161,7 +160,7 @@ contract RewarderTest is Test {
 
         vm.prank(address(1));
         core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn);
-        
+
         Rewarder rewarder = Rewarder(rewarderFactory.lastRewarder());
 
         address user1 = address(0x123);

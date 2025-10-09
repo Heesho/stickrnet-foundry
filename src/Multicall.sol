@@ -207,7 +207,7 @@ contract Multicall {
         uint256 y0 = IToken(token).reserveTokenAmt();
         uint256 y1 = y0 + netAmt;
         uint256 x0 = xv + xr;
-        uint256 x1 = x0.mulDivDown(y0, y1);
+        uint256 x1 = x0.mulWadUp(y0).divWadUp(y1);
 
         if (x1 >= x0) return (0, 0, 0, 0);
 
