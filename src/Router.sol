@@ -12,6 +12,8 @@ import {IRewarder} from "./interfaces/IRewarder.sol";
 contract Router is ReentrancyGuard, Ownable {
     using SafeERC20 for IERC20;
 
+    uint256 public constant CORE_TOKEN_AMT_REQUIRED = 1e18;
+
     address public immutable core;
 
     mapping(address => address) public account_Affiliate;
@@ -61,7 +63,7 @@ contract Router is ReentrancyGuard, Ownable {
         address quote = ICore(core).quote();
         IERC20(quote).safeTransferFrom(msg.sender, address(this), amountQuoteIn);
         _safeApprove(quote, core, amountQuoteIn);
-        token = ICore(core).create(name, symbol, uri, msg.sender, isModerated, amountQuoteIn);
+        token = ICore(core).create(name, symbol, uri, msg.sender, isModerated, amountQuoteIn, CORE_TOKEN_AMT_REQUIRED);
 
         emit Router__TokenCreated(name, symbol, uri, token, msg.sender, isModerated, amountQuoteIn);
     }

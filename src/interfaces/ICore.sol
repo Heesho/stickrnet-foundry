@@ -19,6 +19,7 @@ interface ICore {
         string memory uri,
         address owner,
         bool isModerated,
-        uint256 quoteRawIn
+        uint256 quoteRawIn,
+        uint256 coreTokenAmtRequired
     ) external returns (address token);
 }

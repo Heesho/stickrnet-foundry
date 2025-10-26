@@ -12,7 +12,6 @@ contract Core is Ownable {
     uint256 public constant INITIAL_SUPPLY = 1_000_000_000 * 1e18;
     uint256 public constant RESERVE_VIRT_QUOTE_RAW = 100_000 * 1e6;
     uint256 public constant INITIAL_CONTENT_PRICE = 1e6;
-    uint256 public constant CORE_TOKEN_REQUIRED = 1e18;
 
     address public immutable quote;
 
@@ -57,7 +56,8 @@ contract Core is Ownable {
         string memory uri,
         address owner,
         bool isModerated,
-        uint256 quoteRawIn
+        uint256 quoteRawIn,
+        uint256 coreTokenAmtRequired
     ) external returns (address token) {
         index++;
 
@@ -83,7 +83,7 @@ contract Core is Ownable {
         IERC20(quote).safeApprove(token, 0);
         IERC20(quote).safeApprove(token, quoteRawIn);
         IToken(token).buy(quoteRawIn, 0, 0, address(this), address(0));
-        IERC20(token).safeTransfer(owner, IERC20(token).balanceOf(address(this)) - CORE_TOKEN_REQUIRED);
+        IERC20(token).safeTransfer(owner, IERC20(token).balanceOf(address(this)) - coreTokenAmtRequired);
 
         emit Core__TokenCreated(
             name, symbol, uri, index, token, IToken(token).content(), IToken(token).rewarder(), owner, isModerated

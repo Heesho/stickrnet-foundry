@@ -36,7 +36,7 @@ contract TokenTest is Test {
         usdc.approve(address(core), amountQuoteIn);
 
         vm.prank(address(1));
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn);
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn, 1e18);
 
         Token token = Token(tokenFactory.lastToken());
 
@@ -62,7 +62,7 @@ contract TokenTest is Test {
         usdc.approve(address(core), amountQuoteIn);
 
         vm.prank(address(1));
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn);
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn, 1e18);
 
         Token token = Token(tokenFactory.lastToken());
 
@@ -87,7 +87,7 @@ contract TokenTest is Test {
         usdc.approve(address(core), amountQuoteIn);
 
         vm.prank(address(1));
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn);
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn, 1e18);
 
         Token token = Token(tokenFactory.lastToken());
 
@@ -116,7 +116,7 @@ contract TokenTest is Test {
         usdc.approve(address(core), amountQuoteIn);
 
         vm.prank(address(1));
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn);
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn, 1e18);
 
         Token token = Token(tokenFactory.lastToken());
 
@@ -141,7 +141,7 @@ contract TokenTest is Test {
         usdc.approve(address(core), amountQuoteIn);
 
         vm.prank(address(1));
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn);
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn, 1e18);
 
         Token token = Token(tokenFactory.lastToken());
 
@@ -163,7 +163,7 @@ contract TokenTest is Test {
         usdc.approve(address(core), amountQuoteIn);
 
         vm.prank(address(1));
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn);
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn, 1e18);
 
         Token token = Token(tokenFactory.lastToken());
 
@@ -189,7 +189,7 @@ contract TokenTest is Test {
         usdc.approve(address(core), amountQuoteIn);
 
         vm.prank(address(1));
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn);
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn, 1e18);
 
         Token token = Token(tokenFactory.lastToken());
 
@@ -218,7 +218,7 @@ contract TokenTest is Test {
         usdc.approve(address(core), amountQuoteIn);
 
         vm.prank(address(1));
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn);
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn, 1e18);
 
         Token token = Token(tokenFactory.lastToken());
 
@@ -249,7 +249,7 @@ contract TokenTest is Test {
         usdc.approve(address(core), amountQuoteIn);
 
         vm.prank(address(1));
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn);
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn, 1e18);
 
         Token token = Token(tokenFactory.lastToken());
 
@@ -280,7 +280,7 @@ contract TokenTest is Test {
         usdc.approve(address(core), amountQuoteIn);
 
         vm.prank(address(1));
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn);
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn, 1e18);
 
         Token token = Token(tokenFactory.lastToken());
 
@@ -309,7 +309,7 @@ contract TokenTest is Test {
         usdc.approve(address(core), amountQuoteIn);
 
         vm.prank(address(1));
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn);
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn, 1e18);
 
         Token token = Token(tokenFactory.lastToken());
 
@@ -341,7 +341,7 @@ contract TokenTest is Test {
         usdc.approve(address(core), amountQuoteIn);
 
         vm.prank(address(1));
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn);
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn, 1e18);
 
         Token token = Token(tokenFactory.lastToken());
 
@@ -371,7 +371,7 @@ contract TokenTest is Test {
         usdc.approve(address(core), amountQuoteIn);
 
         vm.prank(address(1));
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn);
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn, 1e18);
 
         Token token = Token(tokenFactory.lastToken());
 
@@ -407,7 +407,7 @@ contract TokenTest is Test {
         usdc.approve(address(core), amountQuoteIn);
 
         vm.prank(address(1));
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn);
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn, 1e18);
 
         Token token = Token(tokenFactory.lastToken());
 
@@ -445,7 +445,7 @@ contract TokenTest is Test {
         usdc.approve(address(core), amountQuoteIn);
 
         vm.prank(address(1));
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn);
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn, 1e18);
 
         Token token = Token(tokenFactory.lastToken());
 
@@ -482,7 +482,7 @@ contract TokenTest is Test {
         usdc.approve(address(core), amountQuoteIn);
 
         vm.prank(address(1));
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn);
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn, 1e18);
 
         Token token = Token(tokenFactory.lastToken());
 
@@ -527,7 +527,7 @@ contract TokenTest is Test {
         usdc.approve(address(core), amountQuoteIn);
 
         vm.prank(address(1));
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn);
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn, 1e18);
 
         Token token = Token(tokenFactory.lastToken());
 
@@ -573,7 +573,7 @@ contract TokenTest is Test {
         usdc.approve(address(core), amountQuoteIn);
 
         vm.prank(address(1));
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn);
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn, 1e18);
 
         Token token = Token(tokenFactory.lastToken());
 
@@ -616,7 +616,7 @@ contract TokenTest is Test {
         usdc.approve(address(core), amountQuoteIn);
 
         vm.prank(address(1));
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn);
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn, 1e18);
 
         Token token = Token(tokenFactory.lastToken());
 
@@ -672,7 +672,7 @@ contract TokenTest is Test {
         usdc.approve(address(core), amountQuoteIn);
 
         vm.prank(address(1));
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn);
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn, 1e18);
 
         Token token = Token(tokenFactory.lastToken());
 
@@ -729,7 +729,7 @@ contract TokenTest is Test {
         usdc.approve(address(core), amountQuoteIn);
 
         vm.prank(address(1));
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn);
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn, 1e18);
 
         Token token = Token(tokenFactory.lastToken());
 
@@ -785,7 +785,7 @@ contract TokenTest is Test {
         usdc.approve(address(core), amountQuoteIn);
 
         vm.prank(address(1));
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn);
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn, 1e18);
 
         Token token = Token(tokenFactory.lastToken());
 
@@ -819,7 +819,7 @@ contract TokenTest is Test {
         usdc.approve(address(core), amountQuoteIn);
 
         vm.prank(address(1));
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn);
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn, 1e18);
 
         Token token = Token(tokenFactory.lastToken());
 
@@ -850,7 +850,7 @@ contract TokenTest is Test {
         usdc.approve(address(core), amountQuoteIn);
 
         vm.prank(address(1));
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn);
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn, 1e18);
 
         Token token = Token(tokenFactory.lastToken());
 

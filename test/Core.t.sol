@@ -44,7 +44,7 @@ contract CoreTest is Test {
         usdc.approve(address(core), amountQuoteIn);
 
         vm.prank(address(1));
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn);
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn, 1e18);
         address lastToken = tokenFactory.lastToken();
 
         assertTrue(lastToken != address(0));
@@ -59,7 +59,7 @@ contract CoreTest is Test {
         usdc.approve(address(core), amountQuoteIn);
 
         vm.prank(address(1));
-        core.create("Test2", "TEST2", "ipfs://test2", address(1), false, amountQuoteIn);
+        core.create("Test2", "TEST2", "ipfs://test2", address(1), false, amountQuoteIn, 1e18);
         address lastToken2 = tokenFactory.lastToken();
 
         assertTrue(lastToken2 != address(0));
@@ -78,7 +78,7 @@ contract CoreTest is Test {
         usdc.approve(address(core), createQuoteAmount);
 
         vm.prank(address(1));
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, createQuoteAmount);
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, createQuoteAmount, 1e18);
 
         address lastToken = tokenFactory.lastToken();
         address lastContent = contentFactory.lastContent();
