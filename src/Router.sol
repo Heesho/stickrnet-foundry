@@ -121,15 +121,18 @@ contract Router is ReentrancyGuard, Ownable {
         emit Router__ContentCreated(token, content, msg.sender, tokenId);
     }
 
-    function collectContent(address token, uint256 tokenId, uint256 maxPrice) external nonReentrant {
+    function collectContent(address token, uint256 tokenId, uint256 epochId, uint256 deadline, uint256 maxPrice)
+        external
+        nonReentrant
+    {
         address content = IToken(token).content();
         address quote = ICore(core).quote();
-        uint256 price = IContent(content).getNextPrice(tokenId);
+        uint256 price = IContent(content).getPrice(tokenId);
 
         IERC20(quote).safeTransferFrom(msg.sender, address(this), price);
         _safeApprove(quote, content, price);
 
-        IContent(content).collect(msg.sender, tokenId, maxPrice);
+        IContent(content).collect(msg.sender, tokenId, epochId, deadline, maxPrice);
 
         emit Router__ContentCollected(token, content, msg.sender, price, tokenId);
     }

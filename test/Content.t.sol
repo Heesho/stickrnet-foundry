@@ -78,29 +78,29 @@ contract ContentTest is Test {
 
         content.create(address(0x123), "ipfs://content1");
         uint256 nextTokenId = content.nextTokenId();
-        uint256 price = content.id_Price(1);
+        uint256 price = content.getPrice(1);
         address creator = content.id_Creator(1);
 
         assertTrue(nextTokenId == 1);
-        assertTrue(price == 0);
+        assertTrue(price == 1e6);
         assertTrue(creator == address(0x123));
 
         content.create(address(0x456), "ipfs://content2");
         nextTokenId = content.nextTokenId();
-        price = content.id_Price(2);
+        price = content.getPrice(2);
         creator = content.id_Creator(2);
 
         assertTrue(nextTokenId == 2);
-        assertTrue(price == 0);
+        assertTrue(price == 1e6);
         assertTrue(creator == address(0x456));
 
         content.create(address(0x789), "ipfs://content3");
         nextTokenId = content.nextTokenId();
-        price = content.id_Price(3);
+        price = content.getPrice(3);
         creator = content.id_Creator(3);
 
         assertTrue(nextTokenId == 3);
-        assertTrue(price == 0);
+        assertTrue(price == 1e6);
         assertTrue(creator == address(0x789));
     }
 
@@ -127,17 +127,14 @@ contract ContentTest is Test {
 
         content.create(address(0x123), "ipfs://content1");
         uint256 nextTokenId = content.nextTokenId();
-        uint256 price = content.id_Price(1);
+        uint256 price = content.getPrice(1);
         address creator = content.id_Creator(1);
         address owner = content.ownerOf(1);
 
         assertTrue(nextTokenId == 1);
-        assertTrue(price == 0);
+        assertTrue(price == 1e6);
         assertTrue(creator == address(0x123));
         assertTrue(owner == address(0x123));
-
-        uint256 nextPrice = content.getNextPrice(1);
-        assertTrue(nextPrice == 1e6);
 
         usdc.mint(address(0x456), 1e6);
 
@@ -145,23 +142,21 @@ contract ContentTest is Test {
         usdc.approve(address(content), 1e6);
 
         vm.prank(address(0x456));
-        content.collect(address(0x456), 1, nextPrice);
+        content.collect(address(0x456), 1, 0, block.timestamp + 20 minutes, 1e6);
 
         nextTokenId = content.nextTokenId();
-        price = content.id_Price(1);
+        price = content.getPrice(1);
         creator = content.id_Creator(1);
         owner = content.ownerOf(1);
 
         assertTrue(nextTokenId == 1);
-        assertTrue(price == 1e6);
+        assertTrue(price > 1e6);
         assertTrue(creator == address(0x123));
         assertTrue(owner == address(0x456));
-
-        nextPrice = content.getNextPrice(1);
-        assertTrue(nextPrice == (price * 11) / 10 + 1e6);
     }
 
-    function test_Content_CollectManyTimes() public {
+    function test_Content_CollectManyTimes(uint256 time) public {
+        vm.assume(time > 0 && time < 3000 days);
         uint256 amountQuoteIn = 1e6;
         usdc.mint(address(1), amountQuoteIn);
 
@@ -184,36 +179,48 @@ contract ContentTest is Test {
 
         content.create(address(0x123), "ipfs://content1");
         uint256 nextTokenId = content.nextTokenId();
-        uint256 price = content.id_Price(1);
+        uint256 price = content.getPrice(1);
         address creator = content.id_Creator(1);
         address owner = content.ownerOf(1);
 
         assertTrue(nextTokenId == 1);
-        assertTrue(price == 0);
+        assertTrue(price == 1e6);
         assertTrue(creator == address(0x123));
         assertTrue(owner == address(0x123));
 
         for (uint256 i = 0; i < 200; i++) {
             address user = address(uint160(i + 1));
-            uint256 lastPrice = content.id_Price(1);
-            price = content.getNextPrice(1);
-            assertTrue(price == (lastPrice * 11) / 10 + 1e6);
+
+            price = content.getPrice(1);
+            if (price > 1_000_000_000_000_000_000) {
+                vm.warp(block.timestamp + 30 days);
+                price = content.getPrice(1);
+            }
 
             usdc.mint(user, price);
 
             vm.prank(user);
             usdc.approve(address(content), price);
 
+            Content.Auction memory auction = content.getAuction(1);
             vm.prank(user);
-            content.collect(user, 1, price);
+            content.collect(user, 1, auction.epochId, block.timestamp + 20 minutes, price);
 
-            uint256 nextPrice = content.getNextPrice(1);
+            uint256 nextPrice = content.getPrice(1);
             creator = content.id_Creator(1);
             owner = content.ownerOf(1);
-
-            assertTrue(nextPrice == (price * 11) / 10 + 1e6);
+            assertTrue(nextPrice > price);
             assertTrue(creator == address(0x123));
             assertTrue(owner == user);
+
+            vm.warp(block.timestamp + time);
+            price = content.getPrice(1);
+
+            if (time >= 30 days) {
+                assertTrue(price == 0);
+            } else {
+                assertTrue(price > 0);
+            }
         }
     }
 
@@ -240,17 +247,17 @@ contract ContentTest is Test {
 
         content.create(address(0x123), "ipfs://content1");
         uint256 nextTokenId = content.nextTokenId();
-        uint256 price = content.id_Price(1);
+        uint256 price = content.getPrice(1);
         address creator = content.id_Creator(1);
         address owner = content.ownerOf(1);
 
         assertTrue(nextTokenId == 1);
-        assertTrue(price == 0);
+        assertTrue(price == 1e6);
         assertTrue(creator == address(0x123));
         assertTrue(owner == address(0x123));
 
         address user = address(0x456);
-        price = content.getNextPrice(1);
+        price = content.getPrice(1);
 
         usdc.mint(user, price);
 
@@ -259,10 +266,10 @@ contract ContentTest is Test {
 
         vm.prank(user);
         vm.expectRevert("Content__MaxPriceExceeded()");
-        content.collect(user, 1, price - 1);
+        content.collect(user, 1, 0, block.timestamp + 20 minutes, price - 1);
 
         vm.prank(user);
-        content.collect(user, 1, price + 1);
+        content.collect(user, 1, 0, block.timestamp + 20 minutes, price);
     }
 
     function test_Content_Distribute(uint256 amount) public {
@@ -348,12 +355,12 @@ contract ContentTest is Test {
 
         content.create(address(0x123), "ipfs://content1");
         uint256 nextTokenId = content.nextTokenId();
-        uint256 price = content.id_Price(1);
+        uint256 price = content.getPrice(1);
         address creator = content.id_Creator(1);
         address owner = content.ownerOf(1);
 
         assertTrue(nextTokenId == 1);
-        assertTrue(price == 0);
+        assertTrue(price == 1e6);
         assertTrue(creator == address(0x123));
         assertTrue(owner == address(0x123));
 
@@ -446,7 +453,7 @@ contract ContentTest is Test {
         content.create(owner, "ipfs://content1");
         vm.prank(owner);
         vm.expectRevert("Content__NotApproved()");
-        content.collect(owner, 1, 1e6);
+        content.collect(owner, 1, 0, block.timestamp + 20 minutes, 1e6);
 
         vm.prank(user);
 
@@ -507,11 +514,11 @@ contract ContentTest is Test {
         assertTrue(content.id_IsApproved(2) == true);
 
         uint256 nextTokenId = content.nextTokenId();
-        uint256 price = content.id_Price(1);
+        uint256 price = content.getPrice(1);
         address creator = content.id_Creator(1);
 
         assertTrue(nextTokenId == 2);
-        assertTrue(price == 0);
+        assertTrue(price == 1e6);
         assertTrue(creator == address(0x123));
 
         vm.prank(address(0x456));
@@ -519,11 +526,11 @@ contract ContentTest is Test {
         assertTrue(content.id_IsApproved(3) == true);
 
         nextTokenId = content.nextTokenId();
-        price = content.id_Price(3);
+        price = content.getPrice(3);
         creator = content.id_Creator(3);
 
         assertTrue(nextTokenId == 3);
-        assertTrue(price == 0);
+        assertTrue(price == 1e6);
         assertTrue(creator == address(0x456));
 
         vm.prank(address(0x789));
@@ -531,11 +538,11 @@ contract ContentTest is Test {
         assertTrue(content.id_IsApproved(4) == true);
 
         nextTokenId = content.nextTokenId();
-        price = content.id_Price(4);
+        price = content.getPrice(4);
         creator = content.id_Creator(4);
 
         assertTrue(nextTokenId == 4);
-        assertTrue(price == 0);
+        assertTrue(price == 1e6);
         assertTrue(creator == address(0x789));
     }
 

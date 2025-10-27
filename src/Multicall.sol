@@ -45,8 +45,11 @@ contract Multicall {
 
     struct ContentData {
         uint256 tokenId;
+        uint256 epochId;
+        uint256 startTime;
+        uint256 initPrice;
+        uint256 stake;
         uint256 price;
-        uint256 nextPrice;
         uint256 rewardForDuration;
         address creator;
         address owner;
@@ -137,14 +140,17 @@ contract Multicall {
                 + ((contentTokenRewardForDuration * IToken(token).getMarketPrice()) / precision)
         );
 
+        IContent.Auction memory auction = IContent(content).getAuction(tokenId);
+
         data.tokenId = tokenId;
-        data.price = IContent(content).id_Price(tokenId);
-        data.nextPrice = IContent(content).getNextPrice(tokenId);
-        data.rewardForDuration = IContent(content).id_Price(tokenId) == 0
-            ? 0
-            : rewardForDuration * IContent(content).id_Price(tokenId) / totalContentStaked;
+        data.epochId = auction.epochId;
+        data.startTime = auction.startTime;
+        data.initPrice = auction.initPrice;
+        data.stake = IContent(content).id_Stake(tokenId);
+        data.price = IContent(content).getPrice(tokenId);
+        data.rewardForDuration = data.stake == 0 ? 0 : rewardForDuration * data.stake / totalContentStaked;
         data.creator = IContent(content).id_Creator(tokenId);
-        data.owner = IContent(content).owner();
+        data.owner = IContent(content).ownerOf(tokenId);
         data.uri = IContent(content).uri();
         data.isApproved = IContent(content).id_IsApproved(tokenId);
 

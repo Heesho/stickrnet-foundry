@@ -68,7 +68,6 @@ contract IntegrationTest is Test {
         vm.prank(user1);
         Token wft1 = Token(router.createToken("Test1", "TEST1", "ipfs://test1", false, createQuoteAmount));
         Multicall.TokenData memory tokenData = multicall.getTokenData(address(wft1), user1);
-        Multicall.ContentData memory contentData = multicall.getContentData(address(wft1), 1);
 
         // user1 buys wft1
         vm.assume(user1BuyAmount1 > 1000 && user1BuyAmount1 < 10_000_000_000_000);
@@ -384,39 +383,38 @@ contract IntegrationTest is Test {
         vm.prank(user1);
         router.createContent(address(wft1), "https://ipfs.com/1");
         tokenData = multicall.getTokenData(address(wft1), user1);
-        contentData = multicall.getContentData(address(wft1), 1);
-        vm.assertTrue(contentData.nextPrice == 1e6);
-
+        Multicall.ContentData memory contentData = multicall.getContentData(address(wft1), 1);
+        vm.assertTrue(contentData.price == 1e6);
         // user2 collects content
         contentData = multicall.getContentData(address(wft1), 1);
-        uint256 contentPrice = contentData.nextPrice;
+        uint256 contentPrice = contentData.price;
         usdc.mint(user2, contentPrice);
         vm.prank(user2);
         usdc.approve(address(router), contentPrice);
         vm.prank(user2);
-        router.collectContent(address(wft1), 1, contentPrice);
+        router.collectContent(address(wft1), 1, 0, block.timestamp + 20 minutes, contentPrice);
         tokenData = multicall.getTokenData(address(wft1), user2);
         vm.warp(block.timestamp + 1 days);
 
         // user3 collects content
         contentData = multicall.getContentData(address(wft1), 1);
-        contentPrice = contentData.nextPrice;
+        contentPrice = contentData.price;
         usdc.mint(user3, contentPrice);
         vm.prank(user3);
         usdc.approve(address(router), contentPrice);
         vm.prank(user3);
-        router.collectContent(address(wft1), 1, contentPrice);
+        router.collectContent(address(wft1), 1, contentData.epochId, block.timestamp + 20 minutes, contentPrice);
         tokenData = multicall.getTokenData(address(wft1), user3);
         vm.warp(block.timestamp + 1 days);
 
         //user1 collects content
         contentData = multicall.getContentData(address(wft1), 1);
-        contentPrice = contentData.nextPrice;
+        contentPrice = contentData.price;
         usdc.mint(user1, contentPrice);
         vm.prank(user1);
         usdc.approve(address(router), contentPrice);
         vm.prank(user1);
-        router.collectContent(address(wft1), 1, contentPrice);
+        router.collectContent(address(wft1), 1, contentData.epochId, block.timestamp + 20 minutes, contentPrice);
         tokenData = multicall.getTokenData(address(wft1), user1);
         vm.warp(block.timestamp + 1 days);
 
