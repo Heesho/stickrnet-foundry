@@ -196,6 +196,10 @@ contract ContentTest is Test {
                 vm.warp(block.timestamp + 30 days);
                 price = content.getPrice(1);
             }
+            if (price < 20) {
+                vm.warp(block.timestamp + 3600);
+                price = content.getPrice(1);
+            }
 
             usdc.mint(user, price);
 
