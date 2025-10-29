@@ -192,9 +192,7 @@ contract Token is ERC20, ERC20Permit, ERC20Votes, ReentrancyGuard {
     }
 
     function rawToWad(uint256 raw) public view returns (uint256) {
-        unchecked {
-            return raw * quoteScale;
-        }
+        return raw * quoteScale;
     }
 
     function wadToRaw(uint256 wad) public view returns (uint256) {
