@@ -76,7 +76,6 @@ contract IntegrationTest is Test {
             multicall.buyQuoteIn(address(wft1), 0, 9800);
         (tokenAmtOut, slippage, minTokenAmtOut, autoMinTokenAmtOut) =
             multicall.buyQuoteIn(address(wft1), user1BuyAmount1, 9800);
-        uint256 quoteRawIn;
         console.log("quoteRawIn", user1BuyAmount1);
         console.log("tokenAmtOut", tokenAmtOut);
         console.log("slippage", slippage);
@@ -103,9 +102,6 @@ contract IntegrationTest is Test {
         // user1 sells all wft1
         (tokenAmtOut, slippage, minTokenAmtOut, autoMinTokenAmtOut) =
             multicall.sellTokenIn(address(wft1), tokenData.accountTokenBalance, 9800);
-        uint256 quoteRawOut;
-        uint256 minQuoteRawOut;
-        uint256 autoMinQuoteRawOut;
         vm.prank(user1);
         wft1.approve(address(router), tokenData.accountTokenBalance);
         vm.prank(user1);
