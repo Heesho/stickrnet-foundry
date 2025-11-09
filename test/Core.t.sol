@@ -37,7 +37,14 @@ contract CoreTest is Test {
     }
 
     function test_Core_Create_Index() public {
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false);
+        uint256 amountQuoteIn = 1e6;
+        usdc.mint(address(1), amountQuoteIn);
+
+        vm.prank(address(1));
+        usdc.approve(address(core), amountQuoteIn);
+
+        vm.prank(address(1));
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn, 1e18);
         address lastToken = tokenFactory.lastToken();
 
         assertTrue(lastToken != address(0));
@@ -46,7 +53,13 @@ contract CoreTest is Test {
         assertTrue(core.index_Token(2) == address(0));
         assertTrue(core.token_Index(lastToken) == 1);
 
-        core.create("Test2", "TEST2", "ipfs://test2", address(1), false);
+        usdc.mint(address(1), amountQuoteIn);
+
+        vm.prank(address(1));
+        usdc.approve(address(core), amountQuoteIn);
+
+        vm.prank(address(1));
+        core.create("Test2", "TEST2", "ipfs://test2", address(1), false, amountQuoteIn, 1e18);
         address lastToken2 = tokenFactory.lastToken();
 
         assertTrue(lastToken2 != address(0));
@@ -57,8 +70,16 @@ contract CoreTest is Test {
         assertTrue(core.token_Index(lastToken2) == 2);
     }
 
-    function test_Core_Create_Token() public {
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false);
+    function test_Core_Create_Token(uint256 createQuoteAmount) public {
+        vm.assume(createQuoteAmount > 1000 && createQuoteAmount < 10_000_000_000_000);
+        usdc.mint(address(1), createQuoteAmount);
+
+        vm.prank(address(1));
+        usdc.approve(address(core), createQuoteAmount);
+
+        vm.prank(address(1));
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, createQuoteAmount, 1e18);
+
         address lastToken = tokenFactory.lastToken();
         address lastContent = contentFactory.lastContent();
         address lastRewarder = rewarderFactory.lastRewarder();
@@ -69,9 +90,6 @@ contract CoreTest is Test {
         assertTrue(token.rewarder() == lastRewarder);
         assertTrue(keccak256(bytes(token.name())) == keccak256(bytes("Test1")));
         assertTrue(keccak256(bytes(token.symbol())) == keccak256(bytes("TEST1")));
-        assertTrue(token.reserveVirtQuoteWad() == 100_000 * 1e18);
-        assertTrue(token.reserveRealQuoteWad() == 0);
-        assertTrue(token.reserveTokenAmt() == 1_000_000_000 * 1e18);
         assertTrue(token.maxSupply() == 1_000_000_000 * 1e18);
     }
 

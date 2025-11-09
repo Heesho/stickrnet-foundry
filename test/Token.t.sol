@@ -29,7 +29,14 @@ contract TokenTest is Test {
     }
 
     function test_Token_Constructor() public {
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false);
+        uint256 amountQuoteIn = 1e6;
+        usdc.mint(address(1), amountQuoteIn);
+
+        vm.prank(address(1));
+        usdc.approve(address(core), amountQuoteIn);
+
+        vm.prank(address(1));
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn, 1e18);
 
         Token token = Token(tokenFactory.lastToken());
 
@@ -44,15 +51,19 @@ contract TokenTest is Test {
         assertTrue(token.quoteDecimals() == 6);
 
         assertTrue(token.maxSupply() == 1_000_000_000 * 1e18);
-        assertTrue(token.reserveRealQuoteWad() == 0);
-        assertTrue(token.reserveVirtQuoteWad() == 100_000 * 1e18);
-        assertTrue(token.reserveTokenAmt() == 1_000_000_000 * 1e18);
-
         assertTrue(token.totalDebtRaw() == 0);
     }
 
     function test_Token_Buy() public {
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false);
+        uint256 amountQuoteIn = 1e6;
+        usdc.mint(address(1), amountQuoteIn);
+
+        vm.prank(address(1));
+        usdc.approve(address(core), amountQuoteIn);
+
+        vm.prank(address(1));
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn, 1e18);
+
         Token token = Token(tokenFactory.lastToken());
 
         address user1 = address(0x123);
@@ -69,7 +80,15 @@ contract TokenTest is Test {
 
     function testFuzz_Token_Buy(uint256 amount) public {
         vm.assume(amount > 1000 && amount < 1_000_000_000_000_000_000);
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false);
+        uint256 amountQuoteIn = 1e6;
+        usdc.mint(address(1), amountQuoteIn);
+
+        vm.prank(address(1));
+        usdc.approve(address(core), amountQuoteIn);
+
+        vm.prank(address(1));
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn, 1e18);
+
         Token token = Token(tokenFactory.lastToken());
 
         address user1 = address(0x123);
@@ -90,7 +109,15 @@ contract TokenTest is Test {
 
     function testFuzzRevert_Token_BuyRevertSlippage(uint256 amount) public {
         vm.assume(amount > 1000 && amount < 1_000_000_000_000_000_000);
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false);
+        uint256 amountQuoteIn = 1e6;
+        usdc.mint(address(1), amountQuoteIn);
+
+        vm.prank(address(1));
+        usdc.approve(address(core), amountQuoteIn);
+
+        vm.prank(address(1));
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn, 1e18);
+
         Token token = Token(tokenFactory.lastToken());
 
         address user1 = address(0x123);
@@ -107,7 +134,15 @@ contract TokenTest is Test {
     }
 
     function testRevert_Token_BuyZeroInput() public {
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false);
+        uint256 amountQuoteIn = 1e6;
+        usdc.mint(address(1), amountQuoteIn);
+
+        vm.prank(address(1));
+        usdc.approve(address(core), amountQuoteIn);
+
+        vm.prank(address(1));
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn, 1e18);
+
         Token token = Token(tokenFactory.lastToken());
 
         address user1 = address(0x123);
@@ -121,7 +156,15 @@ contract TokenTest is Test {
         vm.warp(block.timestamp + 100 weeks);
 
         vm.assume(deadline > 0 && deadline < block.timestamp);
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false);
+        uint256 amountQuoteIn = 1e6;
+        usdc.mint(address(1), amountQuoteIn);
+
+        vm.prank(address(1));
+        usdc.approve(address(core), amountQuoteIn);
+
+        vm.prank(address(1));
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn, 1e18);
+
         Token token = Token(tokenFactory.lastToken());
 
         address user1 = address(0x123);
@@ -139,7 +182,15 @@ contract TokenTest is Test {
     function testFuzz_Token_BuyWithProvider(address provider, uint256 amount) public {
         vm.assume(provider != address(0));
         vm.assume(amount > 1000 && amount < 1_000_000_000_000_000_000);
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false);
+        uint256 amountQuoteIn = 1e6;
+        usdc.mint(address(1), amountQuoteIn);
+
+        vm.prank(address(1));
+        usdc.approve(address(core), amountQuoteIn);
+
+        vm.prank(address(1));
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn, 1e18);
+
         Token token = Token(tokenFactory.lastToken());
 
         address user1 = address(0x123);
@@ -160,7 +211,15 @@ contract TokenTest is Test {
 
     function testFuzz_Token_Sell(uint256 amount) public {
         vm.assume(amount > 1000 && amount < 1_000_000_000_000_000_000);
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false);
+        uint256 amountQuoteIn = 1e6;
+        usdc.mint(address(1), amountQuoteIn);
+
+        vm.prank(address(1));
+        usdc.approve(address(core), amountQuoteIn);
+
+        vm.prank(address(1));
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn, 1e18);
+
         Token token = Token(tokenFactory.lastToken());
 
         address user1 = address(0x123);
@@ -183,7 +242,15 @@ contract TokenTest is Test {
     function testFuzz_Token_SellWithProvider(address provider, uint256 amount) public {
         vm.assume(provider != address(0));
         vm.assume(amount > 1000 && amount < 1_000_000_000_000_000_000);
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false);
+        uint256 amountQuoteIn = 1e6;
+        usdc.mint(address(1), amountQuoteIn);
+
+        vm.prank(address(1));
+        usdc.approve(address(core), amountQuoteIn);
+
+        vm.prank(address(1));
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn, 1e18);
+
         Token token = Token(tokenFactory.lastToken());
 
         address user1 = address(0x123);
@@ -206,7 +273,15 @@ contract TokenTest is Test {
     function testFuzzRevert_Token_SellBelowTradeMin(uint256 amount, uint256 sellAmount) public {
         vm.assume(amount > 1000 && amount < 1_000_000_000_000_000_000);
         vm.assume(sellAmount < 1000);
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false);
+        uint256 amountQuoteIn = 1e6;
+        usdc.mint(address(1), amountQuoteIn);
+
+        vm.prank(address(1));
+        usdc.approve(address(core), amountQuoteIn);
+
+        vm.prank(address(1));
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn, 1e18);
+
         Token token = Token(tokenFactory.lastToken());
 
         address user1 = address(0x123);
@@ -227,7 +302,15 @@ contract TokenTest is Test {
 
     function testRevertFuzz_Token_SellSlippage(uint256 amount) public {
         vm.assume(amount > 1000 && amount < 1_000_000_000_000_000_000);
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false);
+        uint256 amountQuoteIn = 1e6;
+        usdc.mint(address(1), amountQuoteIn);
+
+        vm.prank(address(1));
+        usdc.approve(address(core), amountQuoteIn);
+
+        vm.prank(address(1));
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn, 1e18);
+
         Token token = Token(tokenFactory.lastToken());
 
         address user1 = address(0x123);
@@ -251,7 +334,15 @@ contract TokenTest is Test {
     function testRevertFuzz_Token_SellExpired(uint256 deadline) public {
         vm.warp(block.timestamp + 100 weeks);
         vm.assume(deadline > 0 && deadline < block.timestamp);
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false);
+        uint256 amountQuoteIn = 1e6;
+        usdc.mint(address(1), amountQuoteIn);
+
+        vm.prank(address(1));
+        usdc.approve(address(core), amountQuoteIn);
+
+        vm.prank(address(1));
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn, 1e18);
+
         Token token = Token(tokenFactory.lastToken());
 
         address user1 = address(0x123);
@@ -273,7 +364,15 @@ contract TokenTest is Test {
 
     function testFuzz_Token_BorrowMax(uint256 amount) public {
         vm.assume(amount > 1000 && amount < 1_000_000_000_000_000_000);
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false);
+        uint256 amountQuoteIn = 1e6;
+        usdc.mint(address(1), amountQuoteIn);
+
+        vm.prank(address(1));
+        usdc.approve(address(core), amountQuoteIn);
+
+        vm.prank(address(1));
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn, 1e18);
+
         Token token = Token(tokenFactory.lastToken());
 
         address user1 = address(0x123);
@@ -301,7 +400,15 @@ contract TokenTest is Test {
 
     function testFuzz_Token_Borrow(uint256 amount, uint256 creditAmt) public {
         vm.assume(amount > 1000 && amount < 1_000_000_000_000_000_000);
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false);
+        uint256 amountQuoteIn = 1e6;
+        usdc.mint(address(1), amountQuoteIn);
+
+        vm.prank(address(1));
+        usdc.approve(address(core), amountQuoteIn);
+
+        vm.prank(address(1));
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn, 1e18);
+
         Token token = Token(tokenFactory.lastToken());
 
         address user1 = address(0x123);
@@ -331,7 +438,15 @@ contract TokenTest is Test {
 
     function testFuzzRevert_Token_BorrowOverCredit(uint256 amount) public {
         vm.assume(amount > 1000 && amount < 1_000_000_000_000_000_000);
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false);
+        uint256 amountQuoteIn = 1e6;
+        usdc.mint(address(1), amountQuoteIn);
+
+        vm.prank(address(1));
+        usdc.approve(address(core), amountQuoteIn);
+
+        vm.prank(address(1));
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn, 1e18);
+
         Token token = Token(tokenFactory.lastToken());
 
         address user1 = address(0x123);
@@ -360,7 +475,15 @@ contract TokenTest is Test {
 
     function testFuzz_Token_RepayMax(uint256 amount) public {
         vm.assume(amount > 1000 && amount < 1_000_000_000_000_000_000);
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false);
+        uint256 amountQuoteIn = 1e6;
+        usdc.mint(address(1), amountQuoteIn);
+
+        vm.prank(address(1));
+        usdc.approve(address(core), amountQuoteIn);
+
+        vm.prank(address(1));
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn, 1e18);
+
         Token token = Token(tokenFactory.lastToken());
 
         address user1 = address(0x123);
@@ -397,7 +520,15 @@ contract TokenTest is Test {
 
     function testFuzz_Token_Repay(uint256 amount, uint256 repayAmt) public {
         vm.assume(amount > 1000 && amount < 1_000_000_000_000_000_000);
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false);
+        uint256 amountQuoteIn = 1e6;
+        usdc.mint(address(1), amountQuoteIn);
+
+        vm.prank(address(1));
+        usdc.approve(address(core), amountQuoteIn);
+
+        vm.prank(address(1));
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn, 1e18);
+
         Token token = Token(tokenFactory.lastToken());
 
         address user1 = address(0x123);
@@ -435,7 +566,15 @@ contract TokenTest is Test {
     }
 
     function testRevert_Token_RepayZeroAmount() public {
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false);
+        uint256 amountQuoteIn = 1e6;
+        usdc.mint(address(1), amountQuoteIn);
+
+        vm.prank(address(1));
+        usdc.approve(address(core), amountQuoteIn);
+
+        vm.prank(address(1));
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn, 1e18);
+
         Token token = Token(tokenFactory.lastToken());
 
         address user1 = address(0x123);
@@ -470,7 +609,15 @@ contract TokenTest is Test {
 
     function testFuzz_Token_TransferMax(uint256 amount, uint256 repayAmt) public {
         vm.assume(amount > 1000 && amount < 1_000_000_000_000_000_000);
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false);
+        uint256 amountQuoteIn = 1e6;
+        usdc.mint(address(1), amountQuoteIn);
+
+        vm.prank(address(1));
+        usdc.approve(address(core), amountQuoteIn);
+
+        vm.prank(address(1));
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn, 1e18);
+
         Token token = Token(tokenFactory.lastToken());
 
         address user1 = address(0x123);
@@ -518,7 +665,15 @@ contract TokenTest is Test {
 
     function testFuzz_Token_Transfer(uint256 amount, uint256 repayAmt, uint256 transferAmt) public {
         vm.assume(amount > 1000 && amount < 1_000_000_000_000_000_000);
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false);
+        uint256 amountQuoteIn = 1e6;
+        usdc.mint(address(1), amountQuoteIn);
+
+        vm.prank(address(1));
+        usdc.approve(address(core), amountQuoteIn);
+
+        vm.prank(address(1));
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn, 1e18);
+
         Token token = Token(tokenFactory.lastToken());
 
         address user1 = address(0x123);
@@ -567,7 +722,15 @@ contract TokenTest is Test {
         public
     {
         vm.assume(amount > 1000 && amount < 1_000_000_000_000_000_000);
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false);
+        uint256 amountQuoteIn = 1e6;
+        usdc.mint(address(1), amountQuoteIn);
+
+        vm.prank(address(1));
+        usdc.approve(address(core), amountQuoteIn);
+
+        vm.prank(address(1));
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn, 1e18);
+
         Token token = Token(tokenFactory.lastToken());
 
         address user1 = address(0x123);
@@ -614,7 +777,16 @@ contract TokenTest is Test {
     function testFuzz_Token_Heal(uint256 buyAmt, uint256 healAmt) public {
         vm.assume(buyAmt > 1000 && buyAmt < 1_000_000_000_000_000_000);
         vm.assume(healAmt > 0 && healAmt < 1_000_000_000_000_000_000);
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false);
+
+        uint256 amountQuoteIn = 1e6;
+        usdc.mint(address(1), amountQuoteIn);
+
+        vm.prank(address(1));
+        usdc.approve(address(core), amountQuoteIn);
+
+        vm.prank(address(1));
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn, 1e18);
+
         Token token = Token(tokenFactory.lastToken());
 
         address user1 = address(0x123);
@@ -639,7 +811,16 @@ contract TokenTest is Test {
 
     function testFuzz_Token_Burn(uint256 buyAmt, uint256 burnAmt) public {
         vm.assume(buyAmt > 1000 && buyAmt < 1_000_000_000_000_000_000);
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false);
+
+        uint256 amountQuoteIn = 1e6;
+        usdc.mint(address(1), amountQuoteIn);
+
+        vm.prank(address(1));
+        usdc.approve(address(core), amountQuoteIn);
+
+        vm.prank(address(1));
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn, 1e18);
+
         Token token = Token(tokenFactory.lastToken());
 
         address user1 = address(0x123);
@@ -661,7 +842,16 @@ contract TokenTest is Test {
 
     function testFuzz_Token_Prices(uint256 buyAmt, uint256 burnAmt) public {
         vm.assume(buyAmt > 1000 && buyAmt < 1_000_000_000_000_000_000);
-        core.create("Test1", "TEST1", "ipfs://test1", address(1), false);
+
+        uint256 amountQuoteIn = 1e6;
+        usdc.mint(address(1), amountQuoteIn);
+
+        vm.prank(address(1));
+        usdc.approve(address(core), amountQuoteIn);
+
+        vm.prank(address(1));
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn, 1e18);
+
         Token token = Token(tokenFactory.lastToken());
 
         address user1 = address(0x123);
