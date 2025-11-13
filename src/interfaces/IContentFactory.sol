@@ -12,7 +12,7 @@ interface IContentFactory {
         address quote,
         address rewarderFactory,
         address owner,
-        uint256 initialPrice,
+        uint256 minInitPrice,
         bool isModerated
     ) external returns (address, address);
 }

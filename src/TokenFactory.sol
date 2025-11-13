@@ -100,7 +100,7 @@ contract Token is ERC20, ERC20Permit, ERC20Votes, ReentrancyGuard {
         address contentFactory,
         address rewarderFactory,
         address owner,
-        uint256 initialContentPrice,
+        uint256 minInitPrice,
         bool isModerated
     ) ERC20(name, symbol) ERC20Permit(name) {
         core = _core;
@@ -116,7 +116,7 @@ contract Token is ERC20, ERC20Permit, ERC20Votes, ReentrancyGuard {
         reserveVirtQuoteWad = rawToWad(_virtQuoteRaw);
 
         (content, rewarder) = IContentFactory(contentFactory).create(
-            name, symbol, uri, address(this), _quote, rewarderFactory, owner, initialContentPrice, isModerated
+            name, symbol, uri, address(this), _quote, rewarderFactory, owner, minInitPrice, isModerated
         );
     }
 
@@ -409,7 +409,7 @@ contract TokenFactory {
         address contentFactory,
         address rewarderFactory,
         address owner,
-        uint256 initialContentPrice,
+        uint256 minInitPrice,
         bool isModerated
     ) external returns (address token) {
         token = address(
@@ -424,7 +424,7 @@ contract TokenFactory {
                 contentFactory,
                 rewarderFactory,
                 owner,
-                initialContentPrice,
+                minInitPrice,
                 isModerated
             )
         );
