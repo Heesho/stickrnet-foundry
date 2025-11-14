@@ -142,7 +142,7 @@ contract ContentTest is Test {
         usdc.approve(address(content), 1e6);
 
         vm.prank(address(0x456));
-        content.collect(address(0x456), 1, 0, block.timestamp + 20 minutes, 1e6);
+        content.collect(address(0x456), address(0), 1, 0, block.timestamp + 20 minutes, 1e6);
 
         nextTokenId = content.nextTokenId();
         price = content.getPrice(1);
@@ -208,7 +208,80 @@ contract ContentTest is Test {
 
             Content.Auction memory auction = content.getAuction(1);
             vm.prank(user);
-            content.collect(user, 1, auction.epochId, block.timestamp + 20 minutes, price);
+            content.collect(user, address(0), 1, auction.epochId, block.timestamp + 20 minutes, price);
+
+            uint256 nextPrice = content.getPrice(1);
+            creator = content.id_Creator(1);
+            owner = content.ownerOf(1);
+            assertTrue(nextPrice > price);
+            assertTrue(creator == address(0x123));
+            assertTrue(owner == user);
+
+            vm.warp(block.timestamp + time);
+            price = content.getPrice(1);
+
+            if (time >= 30 days) {
+                assertTrue(price == 0);
+            } else {
+                assertTrue(price > 0);
+            }
+        }
+    }
+
+    function test_Content_CollectManyTimesWithProvider(uint256 time) public {
+        vm.assume(time > 0 && time < 3000 days);
+        uint256 amountQuoteIn = 1e6;
+        usdc.mint(address(1), amountQuoteIn);
+
+        vm.prank(address(1));
+        usdc.approve(address(core), amountQuoteIn);
+
+        vm.prank(address(1));
+        core.create("Test1", "TEST1", "ipfs://test1", address(1), false, amountQuoteIn, 1e18);
+
+        Content content = Content(contentFactory.lastContent());
+        Token token = Token(tokenFactory.lastToken());
+
+        usdc.mint(address(0x789), 1e6);
+
+        vm.prank(address(0x789));
+        usdc.approve(address(token), 1e6);
+
+        vm.prank(address(0x789));
+        token.buy(1e6, 0, 0, address(0x789), address(0));
+
+        content.create(address(0x123), "ipfs://content1");
+        uint256 nextTokenId = content.nextTokenId();
+        uint256 price = content.getPrice(1);
+        address creator = content.id_Creator(1);
+        address owner = content.ownerOf(1);
+
+        assertTrue(nextTokenId == 1);
+        assertTrue(price == 1e6);
+        assertTrue(creator == address(0x123));
+        assertTrue(owner == address(0x123));
+
+        for (uint256 i = 0; i < 200; i++) {
+            address user = address(uint160(i + 1));
+
+            price = content.getPrice(1);
+            if (price > 1_000_000_000_000_000_000) {
+                vm.warp(block.timestamp + 30 days);
+                price = content.getPrice(1);
+            }
+            if (price < 20) {
+                vm.warp(block.timestamp + 3600);
+                price = content.getPrice(1);
+            }
+
+            usdc.mint(user, price);
+
+            vm.prank(user);
+            usdc.approve(address(content), price);
+
+            Content.Auction memory auction = content.getAuction(1);
+            vm.prank(user);
+            content.collect(user, address(459), 1, auction.epochId, block.timestamp + 20 minutes, price);
 
             uint256 nextPrice = content.getPrice(1);
             creator = content.id_Creator(1);
@@ -270,10 +343,10 @@ contract ContentTest is Test {
 
         vm.prank(user);
         vm.expectRevert("Content__MaxPriceExceeded()");
-        content.collect(user, 1, 0, block.timestamp + 20 minutes, price - 1);
+        content.collect(user, address(0), 1, 0, block.timestamp + 20 minutes, price - 1);
 
         vm.prank(user);
-        content.collect(user, 1, 0, block.timestamp + 20 minutes, price);
+        content.collect(user, address(0), 1, 0, block.timestamp + 20 minutes, price);
     }
 
     function test_Content_Distribute(uint256 amount) public {
@@ -457,7 +530,7 @@ contract ContentTest is Test {
         content.create(owner, "ipfs://content1");
         vm.prank(owner);
         vm.expectRevert("Content__NotApproved()");
-        content.collect(owner, 1, 0, block.timestamp + 20 minutes, 1e6);
+        content.collect(owner, address(0), 1, 0, block.timestamp + 20 minutes, 1e6);
 
         vm.prank(user);
 

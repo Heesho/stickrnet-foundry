@@ -14,6 +14,7 @@ contract Content is ERC721, ERC721Enumerable, ERC721URIStorage, ReentrancyGuard,
     using SafeERC20 for IERC20;
 
     uint256 public constant FEE = 1_000;
+    uint256 public constant PROVIDER_FEE = 2_000;
     uint256 public constant DIVISOR = 10_000;
     uint256 public constant PRECISION = 1e18;
     uint256 public constant EPOCH_PERIOD = 30 days;
@@ -56,7 +57,14 @@ contract Content is ERC721, ERC721Enumerable, ERC721URIStorage, ReentrancyGuard,
     error Content__NotModerator();
 
     event Content__Created(address indexed who, address indexed to, uint256 indexed tokenId, string uri);
-    event Content__Collected(address indexed who, address indexed to, uint256 indexed tokenId, uint256 epochId, uint256 price);
+    event Content__Collected(
+        address who,
+        address indexed to,
+        address indexed provider,
+        uint256 indexed tokenId,
+        uint256 epochId,
+        uint256 price
+    );
     event Content__UriSet(string uri);
     event Content__IsModeratedSet(bool isModerated);
     event Content__ModeratorsSet(address indexed account, bool isModerator);
@@ -101,7 +109,7 @@ contract Content is ERC721, ERC721Enumerable, ERC721URIStorage, ReentrancyGuard,
         emit Content__Created(msg.sender, to, tokenId, tokenUri);
     }
 
-    function collect(address to, uint256 tokenId, uint256 epochId, uint256 deadline, uint256 maxPrice)
+    function collect(address to, address provider, uint256 tokenId, uint256 epochId, uint256 deadline, uint256 maxPrice)
         external
         nonReentrant
         returns (uint256 price)
@@ -120,9 +128,6 @@ contract Content is ERC721, ERC721Enumerable, ERC721URIStorage, ReentrancyGuard,
         address creator = id_Creator[tokenId];
         address prevOwner = ownerOf(tokenId);
         uint256 prevStake = id_Stake[tokenId];
-        uint256 feeRaw = price * FEE / DIVISOR;
-        uint256 healRaw = feeRaw / 2;
-
         uint256 newInitPrice = price * PRICE_MULTIPLIER / PRECISION;
 
         if (newInitPrice > ABS_MAX_INIT_PRICE) {
@@ -145,9 +150,19 @@ contract Content is ERC721, ERC721Enumerable, ERC721URIStorage, ReentrancyGuard,
         if (price > 0) {
             IERC20(quote).safeTransferFrom(msg.sender, address(this), price);
 
+            uint256 feeRaw = price * FEE / DIVISOR;
             IERC20(quote).safeTransfer(prevOwner, price - feeRaw);
-            IERC20(quote).safeTransfer(creator, feeRaw - healRaw);
 
+            uint256 providerRaw;
+            if (provider != address(0)) {
+                providerRaw = feeRaw * PROVIDER_FEE / DIVISOR;
+                IERC20(quote).safeTransfer(provider, providerRaw);
+            }
+
+            uint256 creatorRaw = (feeRaw - providerRaw) / 2;
+            IERC20(quote).safeTransfer(creator, creatorRaw);
+
+            uint256 healRaw = feeRaw - creatorRaw - providerRaw;
             IERC20(quote).safeApprove(token, 0);
             IERC20(quote).safeApprove(token, healRaw);
             IToken(token).heal(healRaw);
@@ -158,7 +173,7 @@ contract Content is ERC721, ERC721Enumerable, ERC721URIStorage, ReentrancyGuard,
             IRewarder(rewarder).withdraw(prevOwner, prevStake);
         }
 
-        emit Content__Collected(msg.sender, to, tokenId, epochId, price);
+        emit Content__Collected(msg.sender, to, provider, tokenId, epochId, price);
 
         return price;
     }
