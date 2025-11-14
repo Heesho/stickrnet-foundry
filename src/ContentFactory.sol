@@ -38,9 +38,9 @@ contract Content is ERC721, ERC721Enumerable, ERC721URIStorage, ReentrancyGuard,
     mapping(uint256 => Auction) public id_Auction;
 
     struct Auction {
-        uint16 epochId;
-        uint192 initPrice;
-        uint40 startTime;
+        uint256 epochId;
+        uint256 initPrice;
+        uint256 startTime;
     }
 
     error Content__ZeroTo();
@@ -56,7 +56,7 @@ contract Content is ERC721, ERC721Enumerable, ERC721URIStorage, ReentrancyGuard,
     error Content__NotModerator();
 
     event Content__Created(address indexed who, address indexed to, uint256 indexed tokenId, string uri);
-    event Content__Collected(address indexed who, address indexed to, uint256 indexed tokenId, uint256 price);
+    event Content__Collected(address indexed who, address indexed to, uint256 indexed tokenId, uint256 epochId, uint256 price);
     event Content__UriSet(string uri);
     event Content__IsModeratedSet(bool isModerated);
     event Content__ModeratorsSet(address indexed account, bool isModerator);
@@ -93,8 +93,7 @@ contract Content is ERC721, ERC721Enumerable, ERC721URIStorage, ReentrancyGuard,
         id_Creator[tokenId] = to;
         if (!isModerated) id_IsApproved[tokenId] = true;
 
-        id_Auction[tokenId] =
-            Auction({epochId: 0, initPrice: uint192(minInitPrice), startTime: uint40(block.timestamp)});
+        id_Auction[tokenId] = Auction({epochId: 0, initPrice: minInitPrice, startTime: block.timestamp});
 
         _safeMint(to, tokenId);
         _setTokenURI(tokenId, tokenUri);
@@ -113,7 +112,7 @@ contract Content is ERC721, ERC721Enumerable, ERC721URIStorage, ReentrancyGuard,
         if (block.timestamp > deadline) revert Content__Expired();
 
         Auction memory auction = id_Auction[tokenId];
-        if (uint16(epochId) != auction.epochId) revert Content__EpochIdMismatch();
+        if (epochId != auction.epochId) revert Content__EpochIdMismatch();
 
         price = getPriceFromCache(auction);
         if (price > maxPrice) revert Content__MaxPriceExceeded();
@@ -135,8 +134,8 @@ contract Content is ERC721, ERC721Enumerable, ERC721URIStorage, ReentrancyGuard,
         unchecked {
             auction.epochId++;
         }
-        auction.initPrice = uint192(newInitPrice);
-        auction.startTime = uint40(block.timestamp);
+        auction.initPrice = newInitPrice;
+        auction.startTime = block.timestamp;
 
         id_Auction[tokenId] = auction;
         id_Stake[tokenId] = price;
@@ -159,7 +158,7 @@ contract Content is ERC721, ERC721Enumerable, ERC721URIStorage, ReentrancyGuard,
             IRewarder(rewarder).withdraw(prevOwner, prevStake);
         }
 
-        emit Content__Collected(msg.sender, to, tokenId, price);
+        emit Content__Collected(msg.sender, to, tokenId, epochId, price);
 
         return price;
     }
